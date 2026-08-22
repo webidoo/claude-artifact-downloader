@@ -44,10 +44,15 @@ export function CaptureStep({ artifact }: Props) {
           new tab.
         </li>
         <li>
-          On that new tab, click the bookmarklet again — an <code>.html</code> file is saved to
-          your downloads.
+          On that new tab, press <code>Cmd+S</code> (<code>Ctrl+S</code> on Windows) and save as{' '}
+          <em>“Webpage, HTML Only”</em>. (claude.ai sandboxes that page against script-initiated
+          downloads, so saving goes through the browser menu.)
         </li>
       </ol>
+      <p className="hint">
+        Prefer one click? Install the companion browser extension from the <code>extension/</code>{' '}
+        folder of this repo — it downloads the zip directly from the artifact page.
+      </p>
     </section>
   )
 }

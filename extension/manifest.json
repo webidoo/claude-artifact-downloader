@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Claude Artifact Downloader",
+  "version": "0.2.0",
+  "description": "Download the claude.ai artifact you are viewing as a project zip.",
+  "content_scripts": [
+    {
+      "matches": ["https://claude.ai/code/artifact/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": ["https://*.frame.claudeusercontent.com/*"]
+}

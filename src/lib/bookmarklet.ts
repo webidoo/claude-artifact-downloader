@@ -8,26 +8,19 @@
  * capture step has to run in the user's own tab, on the artifact page itself.
  * A bookmarklet is the lightest way to do that without a browser extension.
  *
- * The same bookmarklet handles both pages it can land on:
- * 1. On `claude.ai/code/artifact/...` it opens the content frame in a new tab.
- * 2. On `*.frame.claudeusercontent.com` it downloads the page as an `.html`
- *    file, which this app then packages into a project zip.
+ * On `claude.ai/code/artifact/...` it opens the content frame in a new tab.
+ * The frame page itself is sandboxed by claude.ai in a way that blocks
+ * page-initiated downloads (blob/anchor tricks are inert), so saving from
+ * there must go through the browser UI (Cmd+S / Ctrl+S) — the bookmarklet
+ * only reminds the user of that. For a one-click flow, use the browser
+ * extension in `extension/` instead.
  */
 
 const BOOKMARKLET_SOURCE = `(function(){
 var h=location.hostname;
 function fail(m){alert('Claude Artifact Downloader: '+m)}
 if(/\\.frame\\.claudeusercontent\\.com$/.test(h)){
-var save=function(html){
-var a=document.createElement('a');
-a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
-a.download=(h.split('.')[0]||'artifact')+'.html';
-document.body.appendChild(a);a.click();a.remove();
-};
-fetch(location.href,{credentials:'same-origin'})
-.then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})
-.then(save)
-.catch(function(){save('<!doctype html> '+document.documentElement.outerHTML)});
+fail('Press Cmd+S (Ctrl+S on Windows) and save as "Webpage, HTML Only", then drop the file into the app.');
 return;
 }
 if(h==='claude.ai'){
