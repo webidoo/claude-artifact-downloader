@@ -3,8 +3,12 @@ import { buildProject } from './lib/htmlProject'
 import { saveBlob } from './lib/download'
 import { zipProject } from './lib/zip'
 import { waitForArtifactFrameSrc } from './frame'
-import { FETCH_ARTIFACT_HTML } from './messages'
-import type { FetchArtifactHtmlResponse } from './messages'
+import { FETCH_ARTIFACT_HTML, TRIGGER_DOWNLOAD } from './messages'
+import type {
+  FetchArtifactHtmlResponse,
+  TriggerDownloadRequest,
+  TriggerDownloadResponse,
+} from './messages'
 
 const BUTTON_ID = 'claude-artifact-downloader-button'
 const FRAME_TIMEOUT_MS = 15_000
@@ -31,8 +35,31 @@ async function downloadArtifactZip(): Promise<string> {
   return project.name
 }
 
-function injectButton(): void {
-  if (document.getElementById(BUTTON_ID)) return
+let busy = false
+
+/** Runs one download, reflecting progress on the page button. */
+async function runDownload(button: HTMLButtonElement): Promise<void> {
+  if (busy) return
+  busy = true
+  button.textContent = 'Preparing…'
+  try {
+    const name = await downloadArtifactZip()
+    button.textContent = `Saved ${name}.zip ✓`
+  } catch (error) {
+    console.error('[claude-artifact-downloader]', error)
+    button.textContent = 'Failed — click to retry'
+    throw error
+  } finally {
+    busy = false
+    setTimeout(() => {
+      button.textContent = '⬇ Download zip'
+    }, 4000)
+  }
+}
+
+function injectButton(): HTMLButtonElement {
+  const existing = document.getElementById(BUTTON_ID)
+  if (existing) return existing as HTMLButtonElement
 
   const button = document.createElement('button')
   button.id = BUTTON_ID
@@ -54,28 +81,30 @@ function injectButton(): void {
     'box-shadow:0 2px 8px rgba(0,0,0,.25)',
   ].join(';')
 
-  let busy = false
   button.addEventListener('click', () => {
-    if (busy) return
-    busy = true
-    button.textContent = 'Preparing…'
-    downloadArtifactZip()
-      .then((name) => {
-        button.textContent = `Saved ${name}.zip ✓`
-      })
-      .catch((error: unknown) => {
-        console.error('[claude-artifact-downloader]', error)
-        button.textContent = 'Failed — click to retry'
-      })
-      .finally(() => {
-        busy = false
-        setTimeout(() => {
-          button.textContent = '⬇ Download zip'
-        }, 4000)
-      })
+    runDownload(button).catch(() => {})
   })
 
   document.body.appendChild(button)
+  return button
 }
 
-injectButton()
+const button = injectButton()
+
+// The popup triggers the same flow for people who reach for the toolbar icon.
+chrome.runtime.onMessage.addListener(
+  (
+    message: TriggerDownloadRequest,
+    _sender,
+    sendResponse: (response: TriggerDownloadResponse) => void,
+  ) => {
+    if (message?.type !== TRIGGER_DOWNLOAD) return
+    runDownload(button)
+      .then(() => sendResponse({ ok: true }))
+      .catch((error: unknown) => {
+        sendResponse({ ok: false, error: error instanceof Error ? error.message : String(error) })
+      })
+    // Keep the message channel open for the async sendResponse above.
+    return true
+  },
+)

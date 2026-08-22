@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Claude Artifact Downloader</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 14px 16px;
+        width: 260px;
+        background: #f7f7f5;
+        color: #1a1a1a;
+        font: 13px/1.5 system-ui, sans-serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #1e1e1c;
+          color: #efeeea;
+        }
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 14px;
+      }
+      p {
+        margin: 6px 0;
+      }
+      button {
+        width: 100%;
+        margin-top: 8px;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 8px;
+        background: #c6613f;
+        color: #fff;
+        font: 600 13px system-ui, sans-serif;
+        cursor: pointer;
+      }
+      #status {
+        min-height: 1em;
+        margin-top: 8px;
+        opacity: 0.75;
+      }
+      [hidden] {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Claude Artifact Downloader</h1>
+
+    <div id="on-artifact" hidden>
+      <p>You are on an artifact page.</p>
+      <button id="download" type="button">⬇ Download zip</button>
+    </div>
+
+    <div id="elsewhere" hidden>
+      <p>
+        Open an artifact page (<code>claude.ai/code/artifact/…</code>) and click the
+        <strong>⬇ Download zip</strong> button that appears in its bottom-right corner —
+        or reopen this popup from there.
+      </p>
+      <button id="open-gallery" type="button">Browse your artifacts</button>
+    </div>
+
+    <p id="status"></p>
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -4,9 +4,7 @@ A browser extension (Manifest V3) that downloads the [claude.ai](https://claude.
 artifact you are viewing as a ready-to-use project zip — `index.html` plus a generated
 README with the source URL and download date.
 
-Open any `https://claude.ai/code/artifact/…` page and click the **⬇ Download zip**
-button that appears in the bottom-right corner. Everything runs locally in your browser;
-artifact content is never sent anywhere.
+Everything runs locally in your browser; artifact content is never sent anywhere.
 
 ## Install
 
@@ -17,6 +15,17 @@ npm run build
 
 Then in Chrome/Edge/Brave: `chrome://extensions` → enable *Developer mode* →
 *Load unpacked* → select the `dist/` folder.
+
+## Usage
+
+Open any `https://claude.ai/code/artifact/…` page. You can download from either place:
+
+- the **⬇ Download zip** button injected in the page's bottom-right corner, or
+- the extension's toolbar icon, whose popup shows a download button when you are on an
+  artifact page (and short instructions when you are not).
+
+Tabs that were already open when the extension was installed or updated need one reload
+before the button appears.
 
 ## Why an extension?
 
@@ -60,12 +69,14 @@ After changing code, rebuild and hit the reload icon on `chrome://extensions`.
 
 ```
 manifest.json            # MV3 manifest (copied verbatim into dist/)
+icons/                   # toolbar/store icons (regenerate: node scripts/make-icons.mjs)
 scripts/build.mjs        # esbuild bundling
 src/
 ├── content.ts           # button UI + orchestration on artifact pages
 ├── background.ts        # service worker: CORS-exempt fetch of the content frame
+├── popup.html / popup.ts# toolbar popup: download trigger + usage hints
 ├── frame.ts             # locate the content iframe (pure, tested)
-├── messages.ts          # typed message contract between content and background
+├── messages.ts          # typed message contracts between the parts
 └── lib/                 # pure core (all tested)
     ├── artifactUrl.ts   # parse claude.ai artifact URLs → {uuid, org, pageUrl}
     ├── htmlProject.ts   # captured HTML → project file list (title, README)
