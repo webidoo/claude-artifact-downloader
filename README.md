@@ -1,5 +1,7 @@
 # Claude Artifact Downloader
 
+[![CI](https://github.com/webidoo/claude-artifact-downloader/actions/workflows/ci.yml/badge.svg)](https://github.com/webidoo/claude-artifact-downloader/actions/workflows/ci.yml)
+
 A browser extension (Manifest V3) that downloads the [claude.ai](https://claude.ai)
 artifact you are viewing as a ready-to-use project zip — `index.html` plus a generated
 README with the source URL and download date.
