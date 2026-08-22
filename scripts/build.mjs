@@ -7,10 +7,16 @@ rmSync(outdir, { recursive: true, force: true })
 mkdirSync(outdir, { recursive: true })
 
 // Content scripts cannot be ES modules, so every entry is bundled as an IIFE.
-for (const entry of ['content', 'background', 'popup']) {
+const entries = {
+  content: 'content',
+  background: 'background',
+  popup: 'popup',
+  'frame-content': 'frameContent',
+}
+for (const [outName, srcName] of Object.entries(entries)) {
   await build({
-    entryPoints: [`src/${entry}.ts`],
-    outfile: `${outdir}/${entry}.js`,
+    entryPoints: [`src/${srcName}.ts`],
+    outfile: `${outdir}/${outName}.js`,
     bundle: true,
     format: 'iife',
     target: 'chrome110',

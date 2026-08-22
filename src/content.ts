@@ -12,16 +12,27 @@ import type {
 
 const BUTTON_ID = 'claude-artifact-downloader-button'
 const FRAME_TIMEOUT_MS = 15_000
+const RELAY_TIMEOUT_MS = 10_000
+const RELAY_RETRY_MS = 500
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 async function fetchArtifactHtml(): Promise<string> {
-  const frameSrc = await waitForArtifactFrameSrc(document, FRAME_TIMEOUT_MS)
-  const response = (await chrome.runtime.sendMessage({
-    type: FETCH_ARTIFACT_HTML,
-    url: frameSrc,
-  })) as FetchArtifactHtmlResponse | undefined
-  if (!response) throw new Error('No response from the extension service worker.')
-  if (!response.ok) throw new Error(response.error)
-  return response.html
+  await waitForArtifactFrameSrc(document, FRAME_TIMEOUT_MS)
+
+  // The frame's own content script may not be ready the instant the iframe
+  // element exists, so retry the relay until it answers or time runs out.
+  const deadline = Date.now() + RELAY_TIMEOUT_MS
+  let lastError = 'No response from the extension service worker.'
+  for (;;) {
+    const response = (await chrome.runtime.sendMessage({
+      type: FETCH_ARTIFACT_HTML,
+    })) as FetchArtifactHtmlResponse | undefined
+    if (response?.ok) return response.html
+    lastError = response?.error ?? lastError
+    if (Date.now() >= deadline) throw new Error(lastError)
+    await sleep(RELAY_RETRY_MS)
+  }
 }
 
 async function downloadArtifactZip(): Promise<string> {

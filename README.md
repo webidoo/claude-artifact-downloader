@@ -48,11 +48,15 @@ which inspired this project.
 
 ## How it works
 
-1. A content script on artifact pages injects the download button and locates the
+1. A content script on artifact pages injects the download button and waits for the
    artifact's content iframe (`src/frame.ts`).
-2. On click, it asks the service worker (`src/background.ts`) to fetch the iframe URL —
-   the extension's `host_permissions` exempt that fetch from CORS.
-3. The HTML is packaged by pure, unit-tested functions (`src/lib/`) and the zip download
+2. A second content script runs *inside* that iframe (`src/frameContent.ts`) — the only
+   context that can read the artifact same-origin, with no CORS and no reuse of the
+   frame's per-session asset token. It re-fetches the document to get the pristine
+   served HTML (falling back to DOM serialization).
+3. The service worker (`src/background.ts`) merely relays messages between the two —
+   content scripts cannot talk to each other directly.
+4. The HTML is packaged by pure, unit-tested functions (`src/lib/`) and the zip download
    is triggered from the artifact page.
 
 ## Development
@@ -73,7 +77,8 @@ icons/                   # toolbar/store icons (regenerate: node scripts/make-ic
 scripts/build.mjs        # esbuild bundling
 src/
 ├── content.ts           # button UI + orchestration on artifact pages
-├── background.ts        # service worker: CORS-exempt fetch of the content frame
+├── frameContent.ts      # runs inside the artifact frame: same-origin HTML capture
+├── background.ts        # service worker: relays messages between content scripts
 ├── popup.html / popup.ts# toolbar popup: download trigger + usage hints
 ├── frame.ts             # locate the content iframe (pure, tested)
 ├── messages.ts          # typed message contracts between the parts
