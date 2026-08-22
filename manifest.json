@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Claude Artifact Downloader",
-  "version": "0.5.2",
-  "description": "Download the claude.ai artifact you are viewing as a project zip.",
+  "name": "Artifact Downloader for Claude",
+  "version": "0.6.0",
+  "description": "Download the claude.ai artifact you are viewing as a ready-to-use project zip. Unofficial - not affiliated with Anthropic.",
+  "homepage_url": "https://github.com/webidoo/claude-artifact-downloader",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -10,7 +11,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Claude Artifact Downloader"
+    "default_title": "Artifact Downloader for Claude"
   },
   "permissions": ["activeTab"],
   "content_scripts": [

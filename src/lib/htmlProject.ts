@@ -44,7 +44,7 @@ function buildReadme(title: string, options: BuildProjectOptions, fileList: stri
   const lines = [
     `# ${title}`,
     '',
-    'Project packaged from a Claude artifact by Claude Artifact Downloader.',
+    'Project packaged from a Claude artifact by Artifact Downloader for Claude.',
     '',
   ]
   if (options.sourceUrl) lines.push(`- Source: ${options.sourceUrl}`)

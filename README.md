@@ -1,4 +1,4 @@
-# Claude Artifact Downloader
+# Artifact Downloader for Claude
 
 [![CI](https://github.com/webidoo/claude-artifact-downloader/actions/workflows/ci.yml/badge.svg)](https://github.com/webidoo/claude-artifact-downloader/actions/workflows/ci.yml)
 
@@ -6,7 +6,8 @@ A browser extension (Manifest V3) that downloads the [claude.ai](https://claude.
 artifact you are viewing as a ready-to-use project zip — `index.html` plus a generated
 README with the source URL and download date.
 
-Everything runs locally in your browser; artifact content is never sent anywhere.
+Everything runs locally in your browser; artifact content is never sent anywhere
+([privacy policy](PRIVACY.md)). Unofficial — not affiliated with Anthropic.
 
 ## Install
 
@@ -70,6 +71,15 @@ npm run typecheck  # TypeScript only, no emit
 ```
 
 After changing code, rebuild and hit the reload icon on `chrome://extensions`.
+
+## Releasing to the Chrome Web Store
+
+`npm run package` builds and zips the extension into
+`release/artifact-downloader-for-claude-<version>.zip`, ready for upload on the
+[Developer Dashboard](https://chrome.google.com/webstore/devconsole). Listing texts,
+permission justifications, and screenshot specs live in
+[store/listing.md](store/listing.md); the privacy policy is [PRIVACY.md](PRIVACY.md).
+Remember to bump `version` in `manifest.json` (and `package.json`) for every upload.
 
 ## Project structure
 
