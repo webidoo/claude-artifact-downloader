@@ -25,6 +25,12 @@ describe('parseArtifactUrl', () => {
     expect(ref?.uuid).toBe(UUID)
   })
 
+  it('parses a shared /code/frame/ URL, preserving the path variant', () => {
+    const ref = parseArtifactUrl(`https://claude.ai/code/frame/${UUID}`)
+    expect(ref?.uuid).toBe(UUID)
+    expect(ref?.pageUrl).toBe(`https://claude.ai/code/frame/${UUID}`)
+  })
+
   it('parses a bare UUID and normalizes case', () => {
     const ref = parseArtifactUrl(`  ${UUID.toUpperCase()} `)
     expect(ref?.uuid).toBe(UUID)
@@ -43,6 +49,7 @@ describe('parseArtifactUrl', () => {
   it('rejects other claude.ai paths', () => {
     expect(parseArtifactUrl(`https://claude.ai/chat/${UUID}`)).toBeNull()
     expect(parseArtifactUrl('https://claude.ai/code/artifact/')).toBeNull()
+    expect(parseArtifactUrl(`https://claude.ai/code/other/${UUID}`)).toBeNull()
   })
 
   it('rejects a slug not separated from the UUID by a dash', () => {

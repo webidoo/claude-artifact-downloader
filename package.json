@@ -1,7 +1,7 @@
 {
   "name": "claude-artifact-downloader",
   "private": true,
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Browser extension that downloads a claude.ai artifact as a project zip",
   "license": "MIT",
   "type": "module",
