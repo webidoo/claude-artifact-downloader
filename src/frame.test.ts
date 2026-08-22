@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { findArtifactFrameSrc, waitForArtifactFrameSrc } from './frame'
 
 const FRAME_SRC =
-  'https://bfdfaef9-bc62-4dfe-ba9e-c58a26c9accf.frame.claudeusercontent.com/_f/3/?__frame_t=token'
+  'https://0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d.frame.claudeusercontent.com/_f/3/?__frame_t=token'
 
 function docWith(body: string): Document {
   return new DOMParser().parseFromString(`<html><body>${body}</body></html>`, 'text/html')

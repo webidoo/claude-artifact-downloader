@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { parseArtifactUrl } from './artifactUrl'
 
-const UUID = 'bfdfaef9-bc62-4dfe-ba9e-c58a26c9accf'
-const ORG = '9b3ada51-874b-4e17-806a-cd2d49a66d4c'
+const UUID = '0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d'
+const ORG = 'f0e1d2c3-b4a5-4968-8776-655443322110'
 
 describe('parseArtifactUrl', () => {
   it('parses a full artifact URL with org', () => {
