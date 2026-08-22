@@ -14,21 +14,28 @@ function setStatus(text: string): void {
 }
 
 async function triggerDownload(tabId: number): Promise<void> {
-  setStatus('Downloading…')
+  setStatus('Downloading… (can take a few seconds)')
+  let response: TriggerDownloadResponse | undefined
   try {
-    const response = (await chrome.tabs.sendMessage(tabId, {
+    response = (await chrome.tabs.sendMessage(tabId, {
       type: TRIGGER_DOWNLOAD,
     })) as TriggerDownloadResponse | undefined
-    if (!response?.ok) throw new Error(response?.error ?? 'No response from the page.')
-    window.close()
   } catch {
     // sendMessage rejects when no content script is listening — typical for a
     // tab that was already open when the extension was installed or updated.
-    setStatus('Could not reach the page. Reload the artifact tab, then try again.')
+    setStatus('The extension is not loaded in this tab. Reload the tab, then try again.')
+    return
   }
+  if (response?.ok) {
+    window.close()
+    return
+  }
+  // Surface the page's actual error so failures are diagnosable.
+  setStatus(response?.error ?? 'The page did not respond. Reload the tab, then try again.')
 }
 
 async function main(): Promise<void> {
+  document.getElementById('version')!.textContent = `v${chrome.runtime.getManifest().version}`
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
   const artifact = tab?.url ? parseArtifactUrl(tab.url) : null
 
