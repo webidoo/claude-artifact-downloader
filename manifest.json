@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Claude Artifact Downloader",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Download the claude.ai artifact you are viewing as a project zip.",
   "content_scripts": [
     {

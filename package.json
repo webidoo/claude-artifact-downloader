@@ -1,33 +1,24 @@
 {
   "name": "claude-artifact-downloader",
   "private": true,
-  "version": "0.2.0",
-  "description": "Download a Claude artifact as a ready-to-use project zip",
+  "version": "0.3.0",
+  "description": "Browser extension that downloads a claude.ai artifact as a project zip",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc --noEmit && vite build",
-    "build:extension": "tsc --noEmit -p extension && node scripts/build-extension.mjs",
-    "preview": "vite preview",
+    "build": "tsc --noEmit && node scripts/build.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p extension"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "jszip": "^3.10.1",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "jszip": "^3.10.1"
   },
   "devDependencies": {
-    "@types/chrome": "^0.2.7",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.4",
-    "@vitejs/plugin-react": "^6.1.0",
+    "@types/chrome": "^0.1.32",
     "esbuild": "^0.28.2",
     "jsdom": "^29.1.1",
     "typescript": "^7.0.2",
-    "vite": "^8.2.2",
     "vitest": "^4.1.11"
   }
 }

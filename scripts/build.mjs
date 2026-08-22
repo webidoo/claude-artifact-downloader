@@ -1,14 +1,15 @@
-/** Bundles the browser extension into extension/dist (load it unpacked from there). */
+/** Bundles the extension into dist/ (load it unpacked from there). */
 import { build } from 'esbuild'
-import { cpSync, mkdirSync } from 'node:fs'
+import { cpSync, mkdirSync, rmSync } from 'node:fs'
 
-const outdir = 'extension/dist'
+const outdir = 'dist'
+rmSync(outdir, { recursive: true, force: true })
 mkdirSync(outdir, { recursive: true })
 
 // Content scripts cannot be ES modules, so both entries are bundled as IIFEs.
 for (const entry of ['content', 'background']) {
   await build({
-    entryPoints: [`extension/src/${entry}.ts`],
+    entryPoints: [`src/${entry}.ts`],
     outfile: `${outdir}/${entry}.js`,
     bundle: true,
     format: 'iife',
@@ -17,4 +18,4 @@ for (const entry of ['content', 'background']) {
   })
 }
 
-cpSync('extension/manifest.json', `${outdir}/manifest.json`)
+cpSync('manifest.json', `${outdir}/manifest.json`)

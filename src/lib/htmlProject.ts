@@ -17,8 +17,6 @@ export interface ArtifactProject {
 export interface BuildProjectOptions {
   /** Original artifact page URL, recorded in the generated README. */
   sourceUrl?: string
-  /** When true, inline <style> and <script> blocks become separate files. */
-  splitAssets?: boolean
   /** Timestamp recorded in the generated README. */
   generatedAt?: Date
 }
@@ -42,52 +40,6 @@ export function slugify(text: string): string {
   return slug || 'claude-artifact'
 }
 
-interface SplitResult {
-  html: string
-  assets: ProjectFile[]
-}
-
-function isInlineScript(script: HTMLScriptElement): boolean {
-  if (script.src) return false
-  if (!script.textContent?.trim()) return false
-  // Only executable scripts are extracted; data blocks (JSON, import maps,
-  // templates, ...) must stay inline to keep the document working.
-  const type = script.type.trim().toLowerCase()
-  return type === '' || type === 'text/javascript' || type === 'module'
-}
-
-/**
- * Extracts inline styles and scripts into `css/` and `js/` files and rewrites
- * the document to reference them. Requires a DOM (browser or jsdom).
- */
-export function splitInlineAssets(html: string): SplitResult {
-  const doc = new DOMParser().parseFromString(html, 'text/html')
-  const assets: ProjectFile[] = []
-
-  doc.querySelectorAll('style').forEach((style, i) => {
-    const content = style.textContent?.trim()
-    if (!content) return
-    const path = `css/style-${i + 1}.css`
-    assets.push({ path, content: content + '\n' })
-    const link = doc.createElement('link')
-    link.setAttribute('rel', 'stylesheet')
-    link.setAttribute('href', path)
-    style.replaceWith(link)
-  })
-
-  doc.querySelectorAll('script').forEach((script, i) => {
-    if (!isInlineScript(script)) return
-    const path = `js/script-${i + 1}.js`
-    assets.push({ path, content: (script.textContent ?? '').trim() + '\n' })
-    const ref = doc.createElement('script')
-    if (script.type) ref.setAttribute('type', script.type)
-    ref.setAttribute('src', path)
-    script.replaceWith(ref)
-  })
-
-  return { html: '<!doctype html>\n' + doc.documentElement.outerHTML + '\n', assets }
-}
-
 function buildReadme(title: string, options: BuildProjectOptions, fileList: string[]): string {
   const lines = [
     `# ${title}`,
@@ -106,15 +58,10 @@ function buildReadme(title: string, options: BuildProjectOptions, fileList: stri
 /** Builds the full project file list for a captured artifact document. */
 export function buildProject(html: string, options: BuildProjectOptions = {}): ArtifactProject {
   const title = extractTitle(html) ?? 'Claude artifact'
-  const { html: indexHtml, assets } = options.splitAssets
-    ? splitInlineAssets(html)
-    : { html, assets: [] }
-
-  const files: ProjectFile[] = [{ path: 'index.html', content: indexHtml }, ...assets]
+  const files: ProjectFile[] = [{ path: 'index.html', content: html }]
   files.push({
     path: 'README.md',
     content: buildReadme(title, options, files.map((f) => f.path)),
   })
-
   return { name: slugify(title), files }
 }
