@@ -18,15 +18,18 @@ const RELAY_RETRY_MS = 500
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 async function fetchArtifactHtml(): Promise<string> {
-  await waitForArtifactFrameSrc(document, FRAME_TIMEOUT_MS)
+  const frameSrc = await waitForArtifactFrameSrc(document, FRAME_TIMEOUT_MS)
 
-  // The frame's own content script may not be ready the instant the iframe
-  // element exists, so retry the relay until it answers or time runs out.
+  // The frame's own content script may not be present (e.g. sandboxed frames
+  // block content-script injection), so pass the frame URL to the service
+  // worker, which can fetch it directly with the user's session cookie. Retry
+  // until it answers or time runs out.
   const deadline = Date.now() + RELAY_TIMEOUT_MS
   let lastError = 'No response from the extension service worker.'
   for (;;) {
     const response = (await chrome.runtime.sendMessage({
       type: FETCH_ARTIFACT_HTML,
+      frameSrc,
     })) as FetchArtifactHtmlResponse | undefined
     if (response?.ok) return response.html
     lastError = response?.error ?? lastError
@@ -58,13 +61,16 @@ async function runDownload(button: HTMLButtonElement): Promise<void> {
     button.textContent = `Saved ${name}.zip ✓`
   } catch (error) {
     console.error('[claude-artifact-downloader]', error)
-    button.textContent = 'Failed — click to retry'
+    const message = error instanceof Error ? error.message : String(error)
+    button.textContent = `Failed: ${message}`
+    button.title = message
     throw error
   } finally {
     busy = false
     setTimeout(() => {
       button.textContent = '⬇ Download zip'
-    }, 4000)
+      button.title = ''
+    }, 6000)
   }
 }
 

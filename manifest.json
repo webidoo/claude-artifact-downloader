@@ -14,9 +14,15 @@
     "default_title": "Artifact Downloader for Claude"
   },
   "permissions": ["activeTab"],
+  "host_permissions": ["https://*.claudeusercontent.com/*"],
   "content_scripts": [
     {
-      "matches": ["https://claude.ai/code/artifact/*", "https://claude.ai/code/frame/*"],
+      "matches": [
+        "https://claude.ai/code/artifact/*",
+        "https://claude.ai/code/frame/*",
+        "https://claude.ai/artifact/*",
+        "https://claude.ai/frame/*"
+      ],
       "js": ["content.js"],
       "run_at": "document_idle"
     },

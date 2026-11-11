@@ -5,6 +5,9 @@ export const FETCH_ARTIFACT_HTML = 'FETCH_ARTIFACT_HTML'
 
 export interface FetchArtifactHtmlRequest {
   type: typeof FETCH_ARTIFACT_HTML
+  /** The artifact frame's URL, when discovered on the page. Lets the service
+   *  worker fetch it directly (works even for sandboxed frames). */
+  frameSrc?: string
 }
 
 export type FetchArtifactHtmlResponse =
