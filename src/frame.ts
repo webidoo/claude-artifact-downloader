@@ -6,7 +6,9 @@
  * artifact HTML.
  */
 
-const FRAME_HOST_RE = /^[0-9a-f-]+\.frame\.claudeusercontent\.com$/i
+// The subdomain is the artifact id, which may be a standard UUID or claude.ai's
+// shorter shared-artifact id (not strictly hex), so allow any alphanumerics.
+const FRAME_HOST_RE = /^[a-z0-9-]+\.frame\.claudeusercontent\.com$/i
 
 /** Returns the content frame URL on an artifact page, or null if absent. */
 export function findArtifactFrameSrc(doc: Document): string | null {
